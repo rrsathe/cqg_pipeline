@@ -29,6 +29,12 @@ Run the pipeline using the runner script:
 python -m src.cqg_pipeline.pipeline_runner
 ```
 
+### Pipeline Runner Options
+- `--input`: Path to input transcript file (default: from `Config.DEFAULT_INPUT_CSV`)
+- `--output-csv`: Path to output CSV file (default: from `Config.DEFAULT_OUTPUT_CSV`)
+- `--output-metrics`: Path to output metrics JSON file (default: from `Config.DEFAULT_METRICS_JSON`)
+- `--domain`: Filter transcripts by domain (e.g., `--domain Hotel`)
+
 ### Filter by Domain
 You can filter transcripts by a specific domain using the `--domain` argument:
 
@@ -37,6 +43,17 @@ python -m src.cqg_pipeline.pipeline_runner --domain Hotel
 ```
 
 This will filter the transcripts to only include dialogues matching the specified domain (e.g., "Filtered to 3341 dialogues matching domain 'Hotel'").
+
+### Custom Output Paths
+You can specify custom output paths:
+
+```bash
+python -m src.cqg_pipeline.pipeline_runner \
+    --input data/my_transcripts.json \
+    --output-csv results/queries.csv \
+    --output-metrics results/metrics.json \
+    --domain Hotel
+```
 
 ### Custom Usage
 You can also run it programmatically:
