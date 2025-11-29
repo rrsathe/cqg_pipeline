@@ -18,7 +18,19 @@ class Config:
     """Central configuration for CQG pipeline."""
     
     # ========== Paths ==========
-    PROJECT_ROOT = Path(__file__).parent.parent.parent
+    
+    @staticmethod
+    def _find_project_root() -> Path:
+        """Find project root by looking for marker files."""
+        current = Path(__file__).resolve().parent
+        for _ in range(4): # Check up to 4 levels up
+            if (current / "requirements.txt").exists() or (current / ".git").exists():
+                return current
+            current = current.parent
+        # Fallback to current working directory or script directory
+        return Path.cwd()
+
+    PROJECT_ROOT = _find_project_root()
     DATA_DIR = PROJECT_ROOT / "data"
     OUTPUT_DIR = PROJECT_ROOT / "output"
     MODELS_DIR = PROJECT_ROOT / "models"
