@@ -77,18 +77,6 @@ You can also run the action-driven clustering component independently to analyze
 python -m src.cqg_pipeline.action_extractor --input data/final_transcripts_domain_corrected.json
 ```
 
-### Action Extractor Options
-- `--input`: Path to input JSON file (default: `data/final_transcripts_domain_corrected.json`)
-- `--clusters`: Number of clusters to create (default: from `Config.N_CLUSTERS`)
-- `--domain`: Filter transcripts by domain (e.g., `--domain Hotel`)
-
-Example with domain filtering:
-```bash
-python -m src.cqg_pipeline.action_extractor --input data/final_transcripts_domain_corrected.json --domain Hotel --clusters 10
-```
-
-This will analyze the transcripts, create clusters, and display discovered action patterns with their characteristics.
-
 ## Output
 - **Queries**: `output/task1_queries.csv` (List of generated queries)
 - **Metrics**: `output/task1_metrics.json` (Cluster stats, execution time)
