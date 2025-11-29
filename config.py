@@ -21,14 +21,25 @@ class Config:
     
     @staticmethod
     def _find_project_root() -> Path:
-        """Find project root by looking for marker files."""
+        """Find project root by looking for marker files or env var."""
+        # 1. Check explicit environment variable
+        if os.getenv("CQG_ROOT"):
+            return Path(os.getenv("CQG_ROOT")).resolve()
+
+        # 2. Walk up from current file
         current = Path(__file__).resolve().parent
         for _ in range(4): # Check up to 4 levels up
             if (current / "requirements.txt").exists() or (current / ".git").exists():
                 return current
             current = current.parent
-        # Fallback to current working directory or script directory
-        return Path.cwd()
+            
+        # 3. Fallback: Check CWD
+        cwd = Path.cwd()
+        if (cwd / "requirements.txt").exists():
+            return cwd
+            
+        # 4. Ultimate fallback
+        return Path(__file__).resolve().parent.parent
 
     PROJECT_ROOT = _find_project_root()
     DATA_DIR = PROJECT_ROOT / "data"

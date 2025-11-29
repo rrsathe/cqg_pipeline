@@ -87,6 +87,10 @@ class ClusterQueryGenerator:
                 if response:
                     queries = [q.strip() for q in response.split('\n') if q.strip()]
                     expanded_queries.extend(queries)
+                else:
+                    # Fallback if response is None (e.g. disabled LLM)
+                    print(f"⚠️  LLM returned None for seed '{seed}'. Using seed as fallback.")
+                    expanded_queries.append(seed)
             except Exception as e:
                 print(f"Error expanding seed '{seed}': {e}")
                 # Fallback: keep the seed itself
