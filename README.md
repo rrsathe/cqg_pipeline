@@ -29,6 +29,15 @@ Run the pipeline using the runner script:
 python -m src.cqg_pipeline.pipeline_runner
 ```
 
+### Filter by Domain
+You can filter transcripts by a specific domain using the `--domain` argument:
+
+```bash
+python -m src.cqg_pipeline.pipeline_runner --domain Hotel
+```
+
+This will filter the transcripts to only include dialogues matching the specified domain (e.g., "Filtered to 3341 dialogues matching domain 'Hotel'").
+
 ### Custom Usage
 You can also run it programmatically:
 

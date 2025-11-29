@@ -44,7 +44,8 @@ class ActionDrivenExtractor:
     def analyze_transcripts(
         self, 
         json_path: str,
-        outcomes: Optional[Dict] = None
+        outcomes: Optional[Dict] = None,
+        domain: Optional[str] = None
     ) -> Dict:
         """
         Complete clustering + characterization pipeline
@@ -65,7 +66,7 @@ class ActionDrivenExtractor:
         }
         """
         # Load transcripts
-        utterances = self.load_transcripts(json_path)
+        utterances = self.load_transcripts(json_path, domain=domain)
         if not utterances:
             return {}
             
@@ -96,7 +97,7 @@ class ActionDrivenExtractor:
         
         return cluster_chars
 
-    def load_transcripts(self, json_path):
+    def load_transcripts(self, json_path, domain: Optional[str] = None):
         """
         Load transcripts from a JSON file.
         Adapted from extract_trajectories.py to handle various formats including
@@ -161,13 +162,24 @@ class ActionDrivenExtractor:
                 if is_dialogue_list:
                      # It's a list of dialogues, we'll aggregate ALL turns from ALL dialogues
                      print(f"Detected list of {len(data)} dialogues.")
+                     filtered_count = 0
                      for entry in data:
                          if isinstance(entry, dict):
+                             # Domain filtering
+                             if domain:
+                                 entry_domain = entry.get("domain") or entry.get("Domain")
+                                 if not entry_domain or entry_domain.lower() != domain.lower():
+                                     continue
+                             
+                             filtered_count += 1
                              # Try to find the conversation list
                              conv = entry.get("conversation") or entry.get("turns") or entry.get("transcript")
                              if conv:
                                  for t in conv:
                                      process_turn(t)
+                     
+                     if domain:
+                         print(f"Filtered to {filtered_count} dialogues matching domain '{domain}'.")
                      return utterances
                 elif "Content" in first_item or "text" in first_item:
                      # Assume it's a single dialogue's list of turns
@@ -351,12 +363,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Action-Driven Semantic Clustering")
     parser.add_argument("--input", type=str, default="data/final_transcripts_domain_corrected.json", help="Path to input JSON file")
     parser.add_argument("--clusters", type=int, default=Config.N_CLUSTERS, help="Number of clusters")
+    parser.add_argument("--domain", type=str, default=None, help="Filter transcripts by domain")
     
     args = parser.parse_args()
 
     try:
         extractor = ActionDrivenExtractor()
-        results = extractor.analyze_transcripts(args.input)
+        results = extractor.analyze_transcripts(args.input, domain=args.domain)
         
         print("\nDiscovered Clusters:")
         for cid, data in results.items():

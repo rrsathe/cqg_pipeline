@@ -81,7 +81,8 @@ class CQGPipeline:
         transcript_file: str,
         output_csv: Optional[str] = None,
         output_metrics: Optional[str] = None,
-        max_transcripts: Optional[int] = None
+        max_transcripts: Optional[int] = None,
+        domain: Optional[str] = None
     ) -> List[str]:
         """
         Execute full CQG pipeline.
@@ -91,6 +92,7 @@ class CQGPipeline:
             output_csv: Path for output CSV (default from config)
             output_metrics: Path for metrics JSON (default from config)
             max_transcripts: Limit number of transcripts to process (not used in clustering load yet, but kept for API compat)
+            domain: Filter transcripts by domain
         
         Returns:
             List of generated queries
@@ -108,7 +110,7 @@ class CQGPipeline:
         # Step 1: Action-Driven Semantic Clustering
         # Note: extractor.analyze_transcripts handles loading internally for now
         logger.info(f"🔄 Phase 1: Analyzing transcripts from {transcript_file}...")
-        self.cluster_chars = self.extractor.analyze_transcripts(transcript_file)
+        self.cluster_chars = self.extractor.analyze_transcripts(transcript_file, domain=domain)
         
         self.stats["clusters_found"] = len(self.cluster_chars)
         logger.info(f"✅ Found {self.stats['clusters_found']} action clusters")
@@ -180,3 +182,28 @@ class CQGPipeline:
         logger.info(f"📈 Queries Generated: {self.stats['queries_generated']}")
         logger.info(f"⏱️  Execution Time: {self.stats['duration_seconds']:.1f}s")
         logger.info("\n" + "=" * 80)
+
+if __name__ == "__main__":
+    import argparse
+    
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, Config.LOG_LEVEL),
+        format=Config.LOG_FORMAT
+    )
+    
+    parser = argparse.ArgumentParser(description="Causal Query Generation Pipeline")
+    parser.add_argument("--input", type=str, default=str(Config.DEFAULT_INPUT_CSV), help="Path to input transcript file")
+    parser.add_argument("--output-csv", type=str, default=str(Config.DEFAULT_OUTPUT_CSV), help="Path to output CSV")
+    parser.add_argument("--output-metrics", type=str, default=str(Config.DEFAULT_METRICS_JSON), help="Path to output metrics JSON")
+    parser.add_argument("--domain", type=str, default=None, help="Filter transcripts by domain")
+    
+    args = parser.parse_args()
+    
+    pipeline = CQGPipeline()
+    pipeline.run(
+        transcript_file=args.input,
+        output_csv=args.output_csv,
+        output_metrics=args.output_metrics,
+        domain=args.domain
+    )
