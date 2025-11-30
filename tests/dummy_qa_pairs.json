@@ -1,0 +1,17 @@
+[
+    {
+        "query": "Why was I charged for a refund request?",
+        "response": "Refund requests are free, but if there was a billing discrepancy, it might appear as a charge initially before being reversed. 45% of such cases are due to system delays.",
+        "confidence": 0.95
+    },
+    {
+        "query": "How long does a refund take?",
+        "response": "Refunds typically take 3-5 business days. However, billing errors can extend this to 10 days.",
+        "confidence": 0.92
+    },
+    {
+        "query": "Can I cancel my subscription?",
+        "response": "Yes, you can cancel anytime from your dashboard. If you cancel mid-month, you will not be charged for the next cycle.",
+        "confidence": 0.98
+    }
+]
